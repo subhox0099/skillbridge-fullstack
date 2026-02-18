@@ -19,13 +19,17 @@ async function getAllProjects() {
   return projects;
 }
 
-async function createProject({ businessUserId, title, description, location, stipend, skillIds = [] }) {
+async function createProject({
+  businessUserId, title, description, location, stipend, skillIds = [], latitude, longitude,
+}) {
   const project = await Project.create({
     business_user_id: businessUserId,
     title,
     description,
     location,
     stipend,
+    latitude: latitude ?? null,
+    longitude: longitude ?? null,
   });
 
   if (skillIds.length) {

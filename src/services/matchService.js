@@ -39,8 +39,16 @@ async function getRecommendedCandidates(projectId) {
       projectSkillIds,
       userSkillIds,
       averageRating: student.average_rating || 0,
-      projectLocation: project.location,
-      userLocation: student.location,
+      project: {
+        location: project.location,
+        latitude: project.latitude,
+        longitude: project.longitude,
+      },
+      user: {
+        location: student.location,
+        latitude: student.latitude,
+        longitude: student.longitude,
+      },
     });
 
     return {

@@ -15,6 +15,8 @@ router.post(
   [
     body('title').notEmpty().withMessage('Title is required'),
     body('description').notEmpty().withMessage('Description is required'),
+    body('latitude').optional().isFloat({ min: -90, max: 90 }).toFloat(),
+    body('longitude').optional().isFloat({ min: -180, max: 180 }).toFloat(),
   ],
   projectController.createProject,
 );

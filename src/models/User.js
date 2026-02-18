@@ -33,6 +33,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true,
     },
+    latitude: {
+      type: DataTypes.DECIMAL(10, 8),
+      allowNull: true,
+    },
+    longitude: {
+      type: DataTypes.DECIMAL(11, 8),
+      allowNull: true,
+    },
     average_rating: {
       type: DataTypes.FLOAT,
       allowNull: true,
@@ -41,6 +49,14 @@ module.exports = (sequelize, DataTypes) => {
     is_active: {
       type: DataTypes.BOOLEAN,
       defaultValue: true,
+    },
+    resume_path: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    parsed_resume_data: {
+      type: DataTypes.JSON,
+      allowNull: true,
     },
   });
 

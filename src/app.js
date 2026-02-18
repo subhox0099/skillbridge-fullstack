@@ -5,6 +5,9 @@ const authRoutes = require('./routes/authRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const applicationRoutes = require('./routes/applicationRoutes');
 const matchRoutes = require('./routes/matchRoutes');
+const resumeRoutes = require('./routes/resumeRoutes');
+const reviewRoutes = require('./routes/reviewRoutes');
+const profileRoutes = require('./routes/profileRoutes');
 const errorHandler = require('./middleware/errorHandler');
 
 dotenv.config();
@@ -24,6 +27,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/applications', applicationRoutes);
 app.use('/api/match', matchRoutes);
+app.use('/api/resume', resumeRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/profile', profileRoutes);
 
 app.use(errorHandler);
 

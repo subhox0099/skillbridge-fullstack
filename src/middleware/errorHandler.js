@@ -4,8 +4,17 @@ const errorHandler = (err, req, res, next) => {
   // eslint-disable-next-line no-console
   console.error('Error:', err);
 
-  const status = err.status || 500;
-  const message = err.message || 'Internal server error';
+  let status = err.status || 500;
+  let message = err.message || 'Internal server error';
+
+  // Multer file upload errors
+  if (err.code === 'LIMIT_FILE_SIZE') {
+    status = 400;
+    message = 'File size exceeds limit';
+  } else if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+    status = 400;
+    message = 'Unexpected field or file type';
+  }
 
   res.status(status).json({
     message,

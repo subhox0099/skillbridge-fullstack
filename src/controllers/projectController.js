@@ -18,7 +18,7 @@ async function createProject(req, res, next) {
     }
 
     const {
-      title, description, location, stipend, skillIds,
+      title, description, location, stipend, skillIds, latitude, longitude,
     } = req.body;
 
     const project = await projectService.createProject({
@@ -28,6 +28,8 @@ async function createProject(req, res, next) {
       location,
       stipend,
       skillIds,
+      latitude,
+      longitude,
     });
 
     return res.status(201).json(project);
