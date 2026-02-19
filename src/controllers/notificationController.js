@@ -8,8 +8,10 @@ async function getNotifications(req, res, next) {
       offset: parseInt(offset),
       unreadOnly: unreadOnly === 'true',
     });
+    console.log(`Returning ${result.notifications?.length || 0} notifications for user ${req.user.id}`);
     return res.json(result);
   } catch (err) {
+    console.error('Error in getNotifications:', err);
     return next(err);
   }
 }

@@ -11,6 +11,8 @@ const resumeRoutes = require('./routes/resumeRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
+const chatRoutes = require('./routes/chatRoutes');
+const aiRoutes = require('./routes/aiRoutes');
 const errorHandler = require('./middleware/errorHandler');
 
 
@@ -34,6 +36,8 @@ app.use('/api/resume', resumeRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/chat', chatRoutes);
+app.use('/api/ai', aiRoutes);
 
 app.use(errorHandler);
 

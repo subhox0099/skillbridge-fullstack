@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Socket Test</title>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+
+<h1>Socket Test Page</h1>
+<p id="status">Connecting...</p>
+<button onclick="sendMsg()">Send Message</button>
+
+<script>
+  const socket = io("http://localhost:4000", {
+    auth: {
+      token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Miwicm9sZSI6IkJ1c2luZXNzIiwiaWF0IjoxNzcxNDQ3MjYwLCJleHAiOjE3NzIwNTIwNjB9.cVUhtCSw6RBw0kZ--DUAZAoQY-hYeCmgDBtUMMMveo0"
+    }
+  });
+
+  socket.on("connect", () => {
+    document.getElementById("status").innerText = "Connected: " + socket.id;
+    console.log("Connected:", socket.id);
+  });
+
+  socket.on("connect_error", (err) => {
+    document.getElementById("status").innerText = "Connection Error";
+    console.error(err);
+  });
+
+  socket.on("new_message", (data) => {
+    console.log("New message:", data);
+    alert("New message received!");
+  });
+
+  function sendMsg() {
+    socket.emit("join_chat", {
+      projectId: 1,
+      otherUserId: 2
+    });
+
+    socket.emit("send_message", {
+      projectId: 1,
+      recipientUserId: 2,
+      text: "Hello from browser!"
+    });
+  }
+</script>
+
+</body>
+</html>

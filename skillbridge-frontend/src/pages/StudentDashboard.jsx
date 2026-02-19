@@ -6,7 +6,7 @@ import ResumeUpload from '../components/ResumeUpload'
 import LoadingSpinner from '../components/LoadingSpinner'
 import SearchBar from '../components/SearchBar'
 import FilterBar from '../components/FilterBar'
-import ContactModal from '../components/ContactModal'
+import ChatBoxModal from '../components/ChatBoxModal'
 import { useAuth } from '../context/AuthContext'
 
 const StudentDashboard = () => {
@@ -18,7 +18,7 @@ const StudentDashboard = () => {
   const [activeTab, setActiveTab] = useState('projects')
   const [searchQuery, setSearchQuery] = useState('')
   const [filters, setFilters] = useState({ status: 'all', sort: 'newest' })
-  const [showContact, setShowContact] = useState(null)
+  const [chatContext, setChatContext] = useState(null)
 
   useEffect(() => {
     loadProjects()
@@ -247,6 +247,21 @@ const StudentDashboard = () => {
                             <p className="text-sm text-gray-600 line-clamp-2">{app.cover_letter}</p>
                           </div>
                         )}
+                        {app.Project?.business && (
+                          <div className="mt-4">
+                            <button
+                              onClick={() =>
+                                setChatContext({
+                                  project: app.Project,
+                                  otherUser: app.Project.business,
+                                })
+                              }
+                              className="btn-secondary text-sm"
+                            >
+                              💬 Chat with Business
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -264,13 +279,13 @@ const StudentDashboard = () => {
         </div>
       )}
 
-      {/* Contact Modal */}
-      {showContact && (
-        <ContactModal
-          isOpen={!!showContact}
-          onClose={() => setShowContact(null)}
-          recipient={showContact}
-          recipientType="business"
+      {/* Chat Modal */}
+      {chatContext && (
+        <ChatBoxModal
+          isOpen={!!chatContext}
+          onClose={() => setChatContext(null)}
+          project={chatContext.project}
+          otherUser={chatContext.otherUser}
         />
       )}
     </div>

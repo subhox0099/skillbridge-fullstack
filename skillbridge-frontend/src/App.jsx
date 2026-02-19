@@ -12,6 +12,7 @@ import PrivateRoute from './components/PrivateRoute'
 import LoadingSpinner from './components/LoadingSpinner'
 import ScrollToTop from './components/ScrollToTop'
 import AppFooter from './components/AppFooter'
+import AIChatWidget from './components/AIChatWidget'
 
 function App() {
   const { loading, isAuthenticated } = useAuth()
@@ -37,12 +38,13 @@ function App() {
             <PrivateRoute>
               <div className="flex flex-col min-h-screen">
                 <Navbar />
-                <main className="flex-1">
+                <main className="flex-1 relative">
                   <Routes>
                     <Route path="/dashboard" element={<DashboardRoute />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="*" element={<Navigate to="/dashboard" replace />} />
                   </Routes>
+                  <AIChatWidget />
                 </main>
                 <AppFooter variant="light" />
               </div>

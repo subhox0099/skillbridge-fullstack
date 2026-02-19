@@ -13,6 +13,7 @@ const defineApplication = require('./Application');
 const defineReview = require('./Review');
 const definePayment = require('./Payment');
 const defineNotification = require('./Notification');
+const defineMessage = require('./Message');
 
 // Initialize models
 const User = defineUser(sequelize, Sequelize.DataTypes);
@@ -27,6 +28,7 @@ const Application = defineApplication(sequelize, Sequelize.DataTypes);
 const Review = defineReview(sequelize, Sequelize.DataTypes);
 const Payment = definePayment(sequelize, Sequelize.DataTypes);
 const Notification = defineNotification(sequelize, Sequelize.DataTypes);
+const Message = defineMessage(sequelize, Sequelize.DataTypes);
 
 // Associations
 Role.hasMany(User, { foreignKey: 'role_id' });
@@ -67,6 +69,14 @@ Payment.belongsTo(Project, { foreignKey: 'project_id' });
 User.hasMany(Notification, { foreignKey: 'user_id' });
 Notification.belongsTo(User, { foreignKey: 'user_id' });
 
+User.hasMany(Message, { foreignKey: 'sender_user_id', as: 'sentMessages' });
+User.hasMany(Message, { foreignKey: 'recipient_user_id', as: 'receivedMessages' });
+Message.belongsTo(User, { as: 'sender', foreignKey: 'sender_user_id' });
+Message.belongsTo(User, { as: 'recipient', foreignKey: 'recipient_user_id' });
+
+Project.hasMany(Message, { foreignKey: 'project_id' });
+Message.belongsTo(Project, { foreignKey: 'project_id' });
+
 module.exports = {
   sequelize,
   Sequelize,
@@ -82,4 +92,5 @@ module.exports = {
   Review,
   Payment,
   Notification,
+  Message,
 };

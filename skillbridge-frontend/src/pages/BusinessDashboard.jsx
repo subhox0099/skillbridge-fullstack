@@ -7,7 +7,7 @@ import SearchBar from '../components/SearchBar'
 import StudentProfileModal from '../components/StudentProfileModal'
 import ApplicationCard from '../components/ApplicationCard'
 import ReviewForm from '../components/ReviewForm'
-import ContactModal from '../components/ContactModal'
+import ChatBoxModal from '../components/ChatBoxModal'
 import MatchScoreBar from '../components/MatchScoreBar'
 import StatsCard from '../components/StatsCard'
 import ProjectStatusModal from '../components/ProjectStatusModal'
@@ -39,6 +39,7 @@ const BusinessDashboard = () => {
     skillIds: [],
   })
   const [availableSkills, setAvailableSkills] = useState([])
+  const [chatContext, setChatContext] = useState(null)
 
   useEffect(() => {
     loadProjects()
@@ -505,6 +506,17 @@ const BusinessDashboard = () => {
                           >
                             View Profile
                           </button>
+                          <button
+                            onClick={() =>
+                              setChatContext({
+                                project: projects.find((p) => p.id === selectedProject),
+                                otherUser: { id: candidate.id, name: candidate.name, email: candidate.email },
+                              })
+                            }
+                            className="btn-secondary text-sm"
+                          >
+                            💬 Chat
+                          </button>
                         </div>
                       </div>
                       
@@ -580,6 +592,12 @@ const BusinessDashboard = () => {
                   onStatusUpdate={() => {
                     loadApplications(selectedProject)
                     loadProjects() // Refresh projects list
+                  }}
+                  onOpenChat={(student, project) => {
+                    setChatContext({
+                      project,
+                      otherUser: student,
+                    })
                   }}
                 />
               ))}
@@ -737,6 +755,16 @@ const BusinessDashboard = () => {
             />
           )}
         </div>
+      )}
+
+      {/* Chat Modal */}
+      {chatContext && (
+        <ChatBoxModal
+          isOpen={!!chatContext}
+          onClose={() => setChatContext(null)}
+          project={chatContext.project}
+          otherUser={chatContext.otherUser}
+        />
       )}
     </div>
   )

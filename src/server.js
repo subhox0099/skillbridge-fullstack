@@ -3,24 +3,34 @@ require('dotenv').config({
   path: path.resolve(__dirname, '../.env')
 });
 
+const http = require('http');
 const dotenv = require('dotenv');
 const app = require('./app');
 const { sequelize } = require('./models');
 const { seedDefaultRoles } = require('./config/seedRoles');
 const { ensureGeoColumns } = require('./config/ensureGeoColumns');
+const { initializeSocket } = require('./socket/socketServer');
 
 const PORT = process.env.PORT || 4000;
 
 async function start() {
   try {
     await sequelize.authenticate();
-    await sequelize.sync();
+    await sequelize.sync({ alter: true });
+
     await ensureGeoColumns(sequelize);
     await seedDefaultRoles();
 
-    app.listen(PORT, () => {
+    // Create HTTP server
+    const server = http.createServer(app);
+
+    // Initialize Socket.IO
+    initializeSocket(server);
+
+    server.listen(PORT, () => {
       // eslint-disable-next-line no-console
       console.log(`SkillBridge backend listening on port ${PORT}`);
+      console.log(`Socket.IO server initialized`);
       // #region agent log
       fetch('http://127.0.0.1:7608/ingest/c5cf458e-c2c6-46e4-bd58-857b266fc38b', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': 'a8bb41' }, body: JSON.stringify({ sessionId: 'a8bb41', location: 'server.js:listen', message: 'backend started', data: { port: PORT }, timestamp: Date.now(), hypothesisId: 'H1' }) }).catch(() => {});
       // #endregion

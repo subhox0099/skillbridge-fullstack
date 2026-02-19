@@ -7,6 +7,7 @@ const TYPE_CONFIG = {
   NEW_APPLICATION: { icon: '✨', label: 'New application', bg: 'bg-emerald-100 text-emerald-700', border: 'border-emerald-200' },
   APPLICATION_STATUS_UPDATE: { icon: '🔄', label: 'Status update', bg: 'bg-amber-100 text-amber-700', border: 'border-amber-200' },
   REVIEW_RECEIVED: { icon: '⭐', label: 'Review', bg: 'bg-violet-100 text-violet-700', border: 'border-violet-200' },
+  CHAT_MESSAGE: { icon: '💬', label: 'Chat message', bg: 'bg-sky-100 text-sky-700', border: 'border-sky-200' },
 }
 
 function getTypeConfig(type) {
@@ -27,12 +28,24 @@ const NotificationCenter = ({ isOpen, onClose }) => {
 
   const loadNotifications = async () => {
     try {
+      console.log('Loading notifications...')
       const response = await api.get('/notifications')
-      setNotifications(response.data.notifications || [])
-      setUnreadCount(response.data.unreadCount || 0)
+      console.log('Notifications response:', response.data)
+      
+      // Handle both possible response structures
+      const notifications = response.data.notifications || response.data || []
+      const unreadCount = response.data.unreadCount !== undefined 
+        ? response.data.unreadCount 
+        : notifications.filter(n => !n.is_read).length
+      
+      setNotifications(Array.isArray(notifications) ? notifications : [])
+      setUnreadCount(unreadCount)
     } catch (error) {
       console.error('Failed to load notifications:', error)
-      toast.error('Could not load notifications')
+      console.error('Error details:', error.response?.data)
+      toast.error(error.response?.data?.message || 'Could not load notifications')
+      setNotifications([])
+      setUnreadCount(0)
     } finally {
       setLoading(false)
     }
@@ -80,7 +93,7 @@ const NotificationCenter = ({ isOpen, onClose }) => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex justify-end"
+      className="fixed inset-0 z-[55] flex justify-end"
       role="dialog"
       aria-modal="true"
       aria-label="Notifications"
@@ -93,7 +106,7 @@ const NotificationCenter = ({ isOpen, onClose }) => {
       />
 
       {/* Drawer from right */}
-      <div className="relative w-full max-w-md bg-white shadow-2xl flex flex-col max-h-full animate-slide-in-right border-l border-gray-200">
+      <div className="relative w-full max-w-md bg-white shadow-2xl flex flex-col max-h-full animate-slide-in-right border-l border-gray-200 z-[60]">
         {/* Header */}
         <div className="shrink-0 bg-gradient-to-r from-primary-600 to-primary-700 text-white px-5 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
@@ -171,7 +184,9 @@ const NotificationCenter = ({ isOpen, onClose }) => {
                             <span className="w-2 h-2 rounded-full bg-primary-500 shrink-0 animate-pulse" />
                           )}
                         </div>
-                        <p className="text-gray-900 mt-1 leading-snug">{notification.message}</p>
+                        <p className="text-[15px] text-gray-900 mt-1 leading-relaxed break-words">
+                          {notification.message}
+                        </p>
                         <p className="text-xs text-gray-400 mt-2">
                           {new Date(notification.createdAt).toLocaleString()}
                         </p>

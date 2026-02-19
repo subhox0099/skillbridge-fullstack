@@ -2,12 +2,10 @@ import { useState } from 'react'
 import api from '../services/api'
 import toast from 'react-hot-toast'
 import StarRating from './StarRating'
-import ContactModal from './ContactModal'
 import ViewResumeButton from './ViewResumeButton'
 
-const ApplicationCard = ({ application, project, onStatusUpdate }) => {
+const ApplicationCard = ({ application, project, onStatusUpdate, onOpenChat }) => {
   const [updating, setUpdating] = useState(false)
-  const [showContact, setShowContact] = useState(false)
   const studentId = application.student_user_id || application.student?.id || application.Student?.id
 
   const handleStatusChange = async (newStatus) => {
@@ -69,12 +67,14 @@ const ApplicationCard = ({ application, project, onStatusUpdate }) => {
             {studentId && (
               <ViewResumeButton studentUserId={studentId} studentName={student?.name} />
             )}
-            <button
-              onClick={() => setShowContact(true)}
-              className="btn-primary text-sm whitespace-nowrap"
-            >
-              Contact
-            </button>
+            {onOpenChat && (
+              <button
+                onClick={() => onOpenChat(student, project)}
+                className="btn-primary text-sm whitespace-nowrap"
+              >
+                💬 Chat
+              </button>
+            )}
             {application.status === 'APPLIED' && (
               <>
                 <button
@@ -104,15 +104,6 @@ const ApplicationCard = ({ application, project, onStatusUpdate }) => {
         </div>
       </div>
 
-      {showContact && student && (
-        <ContactModal
-          isOpen={showContact}
-          onClose={() => setShowContact(false)}
-          recipient={student}
-          recipientType="student"
-          projectId={project?.id}
-        />
-      )}
     </>
   )
 }
