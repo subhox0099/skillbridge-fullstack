@@ -21,6 +21,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    related_id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: true,
+    },
+    related_type: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   });
 
   return Notification;

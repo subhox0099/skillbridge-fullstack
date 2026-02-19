@@ -57,11 +57,17 @@ function distanceToProximityScore(distanceKm, maxDistKm = 50) {
  * @param {number} maxDistKm - Max distance (km) for full proximity score
  * @returns {number} Proximity score between 0 and 1
  */
+function toNum(val) {
+  if (val == null || val === '') return NaN;
+  const n = Number(val);
+  return Number.isFinite(n) ? n : NaN;
+}
+
 function calculateLocationProximity(project, user, maxDistKm = 50) {
-  const pLat = project?.latitude;
-  const pLon = project?.longitude;
-  const uLat = user?.latitude;
-  const uLon = user?.longitude;
+  const pLat = toNum(project?.latitude);
+  const pLon = toNum(project?.longitude);
+  const uLat = toNum(user?.latitude);
+  const uLon = toNum(user?.longitude);
 
   if (
     Number.isFinite(pLat) && Number.isFinite(pLon) &&

@@ -3,6 +3,14 @@ const fs = require('fs').promises;
 const crypto = require('crypto');
 const pdfParse = require('pdf-parse');
 const natural = require('natural');
+// const pdfParse = typeof pdfParseLib === 'function'
+//   ? pdfParseLib
+//   : pdfParseLib.default;
+//   const pdfParseLib = require('pdf-parse');
+
+// console.log("PDF PARSE LIB TYPE:", typeof pdfParseLib);
+// console.log("PDF PARSE LIB VALUE:", pdfParseLib);
+
 const { User, Skill, UserSkill } = require('../models');
 
 // Upload directory for resumes (relative to project root)
@@ -230,11 +238,60 @@ function validateResumeFile(file) {
   }
 }
 
+/**
+ * Check if a business user is allowed to view a student's resume.
+ * Allowed when the student has applied to at least one project owned by the business.
+ */
+async function canBusinessViewStudentResume(studentUserId, businessUserId) {
+  const { Application, Project } = require('../models');
+  const application = await Application.findOne({
+    where: { student_user_id: studentUserId },
+    include: [{ model: Project, required: true, where: { business_user_id: businessUserId } }],
+  });
+  return !!application;
+}
+
+/**
+ * Get absolute file path for a student's resume if the business is allowed to view it.
+ * @returns {Promise<{ absolutePath: string, studentName: string }>}
+ */
+async function getResumeForBusinessView(studentUserId, businessUserId) {
+  const allowed = await canBusinessViewStudentResume(studentUserId, businessUserId);
+  if (!allowed) {
+    const error = new Error('You can only view resumes of students who have applied to your projects');
+    error.status = 403;
+    throw error;
+  }
+
+  const user = await User.findByPk(studentUserId, {
+    attributes: ['id', 'name', 'resume_path'],
+  });
+
+  if (!user || !user.resume_path) {
+    const error = new Error('Student has not uploaded a resume');
+    error.status = 404;
+    throw error;
+  }
+
+  const absolutePath = path.join(process.cwd(), user.resume_path);
+  try {
+    await fs.access(absolutePath);
+  } catch (e) {
+    const error = new Error('Resume file not found');
+    error.status = 404;
+    throw error;
+  }
+
+  return { absolutePath, studentName: user.name };
+}
+
 module.exports = {
   processResumeUpload,
   parseResumeBuffer,
   validateResumeFile,
   ensureUploadDir,
+  getResumeForBusinessView,
+  canBusinessViewStudentResume,
   MAX_FILE_SIZE,
   ALLOWED_MIME_TYPES,
 };

@@ -52,7 +52,29 @@ async function getParsedResume(req, res, next) {
   }
 }
 
+async function viewStudentResume(req, res, next) {
+  try {
+    const studentUserId = parseInt(req.params.userId, 10);
+    if (!studentUserId) {
+      return res.status(400).json({ error: 'Invalid student ID' });
+    }
+
+    const { absolutePath, studentName } = await resumeService.getResumeForBusinessView(
+      studentUserId,
+      req.user.id
+    );
+
+    const filename = `Resume_${studentName.replace(/\s+/g, '_')}.pdf`;
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
+    res.sendFile(absolutePath);
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   uploadResume,
   getParsedResume,
+  viewStudentResume,
 };

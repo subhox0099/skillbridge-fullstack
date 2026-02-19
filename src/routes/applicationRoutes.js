@@ -16,5 +16,21 @@ router.post(
   applicationController.apply,
 );
 
+router.get(
+  '/',
+  authMiddleware,
+  applicationController.getApplications,
+);
+
+router.patch(
+  '/:id/status',
+  authMiddleware,
+  roleMiddleware(['Business', 'Admin']),
+  [
+    body('status').isIn(['APPLIED', 'SHORTLISTED', 'SELECTED', 'REJECTED']).withMessage('Invalid status'),
+  ],
+  applicationController.updateStatus,
+);
+
 module.exports = router;
 

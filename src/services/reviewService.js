@@ -68,6 +68,34 @@ async function createReview({ projectId, reviewerId, revieweeId, rating, comment
 
   await updateUserAverageRating(revieweeId);
 
+  // Send email and notification
+  const reviewer = await User.findByPk(reviewerId);
+  const reviewee = await User.findByPk(revieweeId);
+  const project = await Project.findByPk(projectId);
+
+  if (reviewee) {
+    const emailService = require('./emailService');
+    const notificationService = require('./notificationService');
+
+    await emailService.sendReviewReceivedEmail({
+      studentEmail: reviewee.email,
+      studentName: reviewee.name,
+      reviewerName: reviewer?.name || 'Business',
+      projectTitle: project?.title || 'Project',
+      rating,
+      comment: comment || null,
+    });
+
+    await notificationService.createNotification({
+      userId: revieweeId,
+      type: 'REVIEW_RECEIVED',
+      message: `${reviewer?.name || 'A business'} left you a ${rating}-star review for "${project?.title || 'a project'}".`,
+      relatedId: review.id,
+      relatedType: 'review',
+      sendEmail: false,
+    });
+  }
+
   return review;
 }
 

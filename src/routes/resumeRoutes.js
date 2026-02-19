@@ -21,4 +21,12 @@ router.get(
   resumeController.getParsedResume,
 );
 
+// Business/Admin can view a student's resume if the student applied to their project
+router.get(
+  '/student/:userId',
+  authMiddleware,
+  roleMiddleware(['Business', 'Admin']),
+  resumeController.viewStudentResume,
+);
+
 module.exports = router;

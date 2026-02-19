@@ -58,6 +58,9 @@ async function login({ email, password }) {
   });
 
   if (!user) {
+    // #region agent log
+    fetch('http://127.0.0.1:7608/ingest/c5cf458e-c2c6-46e4-bd58-857b266fc38b', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': 'a8bb41' }, body: JSON.stringify({ sessionId: 'a8bb41', location: 'authService.js:login', message: 'login result', data: { outcome: 'noUser' }, timestamp: Date.now(), hypothesisId: 'H2' }) }).catch(() => {});
+    // #endregion
     const error = new Error('Invalid email or password');
     error.status = 401;
     throw error;
@@ -65,10 +68,17 @@ async function login({ email, password }) {
 
   const isMatch = await bcrypt.compare(password, user.password_hash);
   if (!isMatch) {
+    // #region agent log
+    fetch('http://127.0.0.1:7608/ingest/c5cf458e-c2c6-46e4-bd58-857b266fc38b', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': 'a8bb41' }, body: JSON.stringify({ sessionId: 'a8bb41', location: 'authService.js:login', message: 'login result', data: { outcome: 'badPassword' }, timestamp: Date.now(), hypothesisId: 'H2' }) }).catch(() => {});
+    // #endregion
     const error = new Error('Invalid email or password');
     error.status = 401;
     throw error;
   }
+  // #region agent log
+  const roleName = user.Role?.name;
+  fetch('http://127.0.0.1:7608/ingest/c5cf458e-c2c6-46e4-bd58-857b266fc38b', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': 'a8bb41' }, body: JSON.stringify({ sessionId: 'a8bb41', location: 'authService.js:login', message: 'login result', data: { outcome: 'success', userId: user.id, role: roleName }, timestamp: Date.now(), hypothesisId: 'H2' }) }).catch(() => {});
+  // #endregion
 
   const token = jwt.sign(
     {

@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -8,9 +10,10 @@ const matchRoutes = require('./routes/matchRoutes');
 const resumeRoutes = require('./routes/resumeRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const profileRoutes = require('./routes/profileRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 const errorHandler = require('./middleware/errorHandler');
 
-dotenv.config();
+
 
 const app = express();
 
@@ -30,6 +33,7 @@ app.use('/api/match', matchRoutes);
 app.use('/api/resume', resumeRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 app.use(errorHandler);
 
