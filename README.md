@@ -46,6 +46,13 @@ The app will automatically:
 npm run dev
 ```
 
+### Run the front-end server
+
+```bash
+cd skillbridge-frontend
+npm run dev
+```
+
 Server starts on `http://localhost:4000` by default.
 
 Health check:
